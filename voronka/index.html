@@ -39,14 +39,7 @@
     --border-strong: rgba(234,226,210,0.28);
   }
   * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--ground);
-    color: var(--ink);
-    font-family: "Source Serif 4", Georgia, serif;
-    font-size: 17px;
-    line-height: 1.6;
-  }
+  body { margin: 0; background: var(--ground); color: var(--ink); font-family: "Source Serif 4", Georgia, serif; font-size: 17px; line-height: 1.6; }
   .wrap { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; display: flex; flex-direction: column; gap: 2.75rem; }
   .eyebrow { font-family: "IBM Plex Sans", sans-serif; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-strong); margin: 0; }
   h1 { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: clamp(30px, 6vw, 42px); line-height: 1.1; margin: 0.35rem 0 0.6rem; text-wrap: balance; }
@@ -68,8 +61,7 @@
 
   .dm { background: var(--card-bg); border: 1px solid var(--border); border-left: 3px solid var(--gold); border-radius: 0 10px 10px 0; padding: 1.1rem 1.2rem; }
   .dm.pick { border-left-color: var(--red); }
-  .dm .tag { font-family: "IBM Plex Sans", sans-serif; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); display: block; margin-bottom: 0.5rem; }
-  .dm .tag.quiet { color: var(--gold-strong); }
+  .dm .tag { font-family: "IBM Plex Sans", sans-serif; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-strong); display: block; margin-bottom: 0.5rem; }
   .dm p { margin-bottom: 0.7rem; }
   .dm .link { font-family: "IBM Plex Sans", sans-serif; font-size: 14px; word-break: break-all; }
   .btn { display: inline-block; font-family: "IBM Plex Sans", sans-serif; font-size: 13px; color: var(--card-bg); background: var(--red); border-radius: 999px; padding: 0.45rem 1.1rem; margin-top: 0.2rem; }
@@ -80,6 +72,12 @@
   .warn { border: 1px solid var(--border-strong); border-left: 3px solid var(--red); border-radius: 0 10px 10px 0; padding: 1rem 1.15rem; }
   .warn h2 { color: var(--red); }
 
+  table { width: 100%; border-collapse: collapse; font-family: "IBM Plex Sans", sans-serif; font-size: 14px; }
+  th, td { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border); }
+  th { color: var(--ink-soft); font-weight: 500; }
+  td.num { font-variant-numeric: tabular-nums; }
+  .scroller { overflow-x: auto; }
+
   footer { border-top: 1px solid var(--border); padding-top: 1.5rem; color: var(--ink-soft); font-size: 15.5px; }
   footer ul { margin: 0.6rem 0 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 0.4rem; }
 </style>
@@ -89,12 +87,21 @@
   <header>
     <p class="eyebrow">Кодовое слово · СИЛА</p>
     <h1>Что уйдёт человеку в ответ</h1>
-    <p class="lede">Лид-магнит — интерактив «Архетипы и тени»: <a href="https://kuzmina-psy.github.io/arhetipy-i-teni/">kuzmina-psy.github.io/arhetipy-i-teni</a>. Ниже весь путь человека и все тексты, которые бот скажет от твоего имени.</p>
+    <p class="lede">Собрано по твоей рабочей схеме «СЦЕНАРИЙ»: комментарий → директ → проверка подписки → закреп Telegram-канала. Материал — интерактив <a href="https://kuzmina-psy.github.io/arhetipy-i-teni/">«Архетипы и тени»</a>.</p>
   </header>
 
   <section>
-    <div class="step-head"><span class="step-num">1</span><h2>Ответ под комментарием</h2></div>
-    <p class="note">Человек написал «Сила». Ответ появляется публично, прямо под его комментарием. Восемь формулировок, бот берёт случайную: ответы висят столбиком под постом, и один и тот же текст двадцать раз подряд виден всем как работа робота.</p>
+    <div class="step-head"><span class="step-num">1</span><h2>Слова-ловушки</h2></div>
+    <p class="note">В «СЦЕНАРИИ» стоят три написания, включая опечатку — то же делаем здесь. Ловить по куску, без учёта регистра.</p>
+    <div class="group">
+      <p><strong>сила · силу · сил</strong></p>
+      <p class="note">«сил» ловит и «Сила», и «силу», и «силаа», и «сила🙏». Триггер срабатывает и на комментарий, и на сообщение в директ — как в остальных четырёх воронках.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="step-head"><span class="step-num">2</span><h2>Ответ под комментарием</h2></div>
+    <p class="note">Восемь формулировок, бот берёт случайную: ответы висят столбиком под постом, и один и тот же текст двадцать раз подряд виден всем как работа робота.</p>
     <ol class="replies">
       <li>Отправила в директ.</li>
       <li>Ушло в личные — забирай.</li>
@@ -105,66 +112,55 @@
       <li>Забирай в личных.</li>
       <li>Ссылка у тебя в директе.</li>
     </ol>
-    <p class="note">Слово ловим по куску и без учёта регистра. Пишут «сила», «СИЛА», «Сила!», «силаа», «сила🙏» — при точном совпадении половина останется без ответа.</p>
   </section>
 
   <section>
-    <div class="step-head"><span class="step-num">2</span><h2>Первое сообщение в директ — подписка</h2></div>
-    <p class="note">Ссылку тут ещё не отдаём. Сначала просим подписаться и ставим кнопку, по которой бот проверит подписку.</p>
+    <div class="step-head"><span class="step-num">3</span><h2>Первое сообщение в директ</h2></div>
+    <p class="note">Ссылки тут нет. Просьба подписаться и кнопка, по которой бот проверит подписку.</p>
     <div class="dm pick">
-      <span class="tag">Уходит сразу после комментария</span>
-      <p>Держу для тебя карты. Подпишись на меня — я делаю такие штуки для своих.</p>
-      <p>Подписалась? Жми кнопку, и отдам.</p>
-      <p><span class="btn">Я подписалась</span></p>
-    </div>
-    <p class="note">Если человек уже подписан — настроить так, чтобы этот шаг пропускался и ссылка уходила сразу. Просить подписку у того, кто подписан давно, — верный способ получить отписку.</p>
-  </section>
-
-  <section>
-    <div class="step-head"><span class="step-num">3</span><h2>Проверка не прошла</h2></div>
-    <p class="note">Нажал кнопку, подписки нет. Отвечаем без нажима и оставляем кнопку на месте.</p>
-    <div class="dm">
-      <span class="tag quiet">Подписка не найдена</span>
-      <p>Подписки пока не вижу. Подпишись и жми кнопку ещё раз — карты никуда не денутся.</p>
-      <p><span class="btn">Проверить ещё раз</span></p>
-    </div>
-    <h3>Напоминание, если кнопку так и не нажали — через 3–4 часа, один раз</h3>
-    <div class="dm">
-      <p>Карты всё ещё у меня. Подпишись и жми кнопку — отдам.</p>
+      <span class="tag">Уходит сразу</span>
+      <p>Привет 👋 Рада, что тебя зацепили архетипы и тени. Чтобы забрать карты, подпишись на мой инстаграм и жми кнопку ниже.</p>
+      <p><span class="btn">Готово</span></p>
     </div>
   </section>
 
   <section>
-    <div class="step-head"><span class="step-num">4</span><h2>Проверка прошла — выдача</h2></div>
-    <p class="note">Выбери один из двух. Оба короткие, разница в концовке.</p>
+    <div class="step-head"><span class="step-num">4</span><h2>Подписки нет</h2></div>
+    <div class="dm">
+      <span class="tag">Проверка не прошла</span>
+      <p>Пока не вижу подписки 🙈 Подпишись — и жми кнопку ещё раз, я проверю.</p>
+      <p><span class="btn">✅ Готово</span></p>
+    </div>
+  </section>
 
+  <section>
+    <div class="step-head"><span class="step-num">5</span><h2>Подписка есть — отдаём карты</h2></div>
     <div class="dm pick">
-      <span class="tag">Вариант Б · рекомендую</span>
-      <p class="link">Вот твои карты: https://kuzmina-psy.github.io/arhetipy-i-teni/</p>
-      <p>Тянешь архетип, тянешь тень — и видишь, как твоя сила работает и где разворачивается в свою противоположность.</p>
-      <p>Что выпало? Напиши, мне интересно.</p>
+      <span class="tag">Выдача</span>
+      <p>Супер! Карты ждут в закрепе моего Telegram-канала. Тянешь архетип, тянешь тень — и собирается разбор твоего сочетания.</p>
+      <p><span class="btn">Перейти в Telegram</span></p>
+      <p class="link">кнопка ведёт на https://t.me/kuz_mi_na_1</p>
     </div>
-    <p class="note">Заканчивается вопросом, на который легко ответить одной строкой. Человек остаётся в переписке с тобой, а не просто уносит ссылку.</p>
-
+    <h3>Через 10 минут, если по ссылке так и не перешли</h3>
     <div class="dm">
-      <span class="tag quiet">Вариант А</span>
-      <p>Держи. Тянешь две карты — архетип и тень — и собирается разбор твоего сочетания: чем ты располагаешь и где эта сила оборачивается против тебя.</p>
+      <p>Прошло 10 минут, а карты всё ждут 🙂 Ссылка по кнопке выше — жми и забирай.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="step-head"><span class="step-num">6</span><h2>Пост в Telegram-канал — в закреп</h2></div>
+    <p class="note">Без него воронка упирается в пустой закреп. Человек приходит в канал именно за этим сообщением.</p>
+    <div class="dm pick">
+      <p><strong>Архетипы и тени</strong></p>
+      <p>Тянешь две карты. Архетип показывает, на что ты опираешься. Тень — куда эта сила уходит, когда включаются страх, защита и привычный способ справляться.</p>
+      <p>Вместе они собирают разбор именно твоего сочетания: где сила, чем она блокируется, что выпадает из поля зрения.</p>
       <p class="link">https://kuzmina-psy.github.io/arhetipy-i-teni/</p>
-      <p>Минута времени. Если выпавшее зацепит — напиши мне сюда, отвечу.</p>
-    </div>
-  </section>
-
-  <section>
-    <div class="step-head"><span class="step-num">5</span><h2>Если директ вообще не дошёл</h2></div>
-    <p class="note">Instagram не даёт написать первым тем, кто не подписан или закрыл личные сообщения. Для них — публичный ответ под комментарием:</p>
-    <div class="group">
-      <p>Написала тебе в личные. Если не видно — посмотри в запросах сообщений.</p>
+      <p>Минута времени. Напиши в комментариях, что выпало.</p>
     </div>
   </section>
 
   <section>
     <h2>Обычные комментарии — без кодового слова</h2>
-
     <div class="group">
       <h3>Благодарность, сердечки, эмодзи</h3>
       <ul>
@@ -173,7 +169,6 @@
         <li>Рада, что попало.</li>
       </ul>
     </div>
-
     <div class="group">
       <h3>Узнавание: «это про меня», «прямо в точку»</h3>
       <ul>
@@ -182,7 +177,6 @@
         <li>Держись за это узнавание, с него и начинается работа.</li>
       </ul>
     </div>
-
     <div class="group">
       <h3>Вопрос по теме</h3>
       <ul>
@@ -197,12 +191,26 @@
     <p>Робот, вежливо отвечающий на резкий комментарий, раздувает ветку сильнее самого комментария, и под постом остаётся видно, что человеку ответила машина. Эти — руками или никак.</p>
   </section>
 
+  <section>
+    <h2>Где проседает «СЦЕНАРИЙ» — чтобы не повторить</h2>
+    <div class="scroller">
+      <table>
+        <tr><th>Шаг</th><th>Людей</th><th>Доля</th></tr>
+        <tr><td>Вошли в воронку</td><td class="num">62</td><td class="num">100%</td></tr>
+        <tr><td>Нажали «Готово»</td><td class="num">33</td><td class="num">53%</td></tr>
+        <tr><td>Дошли до выдачи</td><td class="num">32</td><td class="num">52%</td></tr>
+        <tr><td>Перешли по ссылке</td><td class="num">30</td><td class="num">48%</td></tr>
+      </table>
+    </div>
+    <p class="note">Кто доходит до ссылки — жмёт почти всегда (94% от дошедших). Теряется половина на первом же шаге: люди не нажимают «Готово». Там и стоит пробовать другую формулировку.</p>
+  </section>
+
   <footer>
     <p>Осталось решить:</p>
     <ul>
       <li>Текст поста с призывом «напиши слово СИЛА» — отдельная работа, там нужна проверка на риск занижения охвата у Meta.</li>
-      <li>Механика «слово в комментариях» у Meta размечена как engagement bait. Для запуска нормально, в каждый пост подряд ставить не стоит.</li>
-      <li>Собрать это в ChatPlace: ловушка на слово, проверка подписки, кнопки, напоминание.</li>
+      <li>Собрать автоматизацию в ChatPlace рядом с ДЕВЯТЬ, ШАГ, ВЕРЮ и СЦЕНАРИЙ.</li>
+      <li>Опубликовать пост из шага 6 в канале и закрепить.</li>
     </ul>
   </footer>
 
