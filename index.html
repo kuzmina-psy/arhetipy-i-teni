@@ -1,0 +1,315 @@
+<meta charset="utf-8">
+<title>Архетипы и Тени</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #EDE6D6;
+    --ink: #211B14;
+    --ink-soft: #5B5040;
+    --gold: #9C7226;
+    --gold-strong: #7A5A1D;
+    --red: #7A2530;
+    --slot-bg: #2B2118;
+    --slot-ink: #EAE2D2;
+    --card-bg: #F7F3E8;
+    --border: rgba(33,27,20,0.14);
+    --border-strong: rgba(33,27,20,0.28);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #171310;
+      --ink: #EAE2D2;
+      --ink-soft: #B7AA92;
+      --gold: #D4A64C;
+      --gold-strong: #E8C169;
+      --red: #C06874;
+      --slot-bg: #100D0A;
+      --slot-ink: #EAE2D2;
+      --card-bg: #221C15;
+      --border: rgba(234,226,210,0.14);
+      --border-strong: rgba(234,226,210,0.26);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #171310;
+    --ink: #EAE2D2;
+    --ink-soft: #B7AA92;
+    --gold: #D4A64C;
+    --gold-strong: #E8C169;
+    --red: #C06874;
+    --slot-bg: #100D0A;
+    --slot-ink: #EAE2D2;
+    --card-bg: #221C15;
+    --border: rgba(234,226,210,0.14);
+    --border-strong: rgba(234,226,210,0.26);
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--ground); color: var(--ink); font-family: "Source Serif 4", Georgia, serif; margin: 0; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+  .eyebrow { font-family: "IBM Plex Sans", sans-serif; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-strong); margin: 0 0 0.4rem; }
+  h1 { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: clamp(28px, 5vw, 40px); line-height: 1.15; margin: 0 0 0.5rem; text-wrap: balance; }
+  .lede { color: var(--ink-soft); font-size: 16px; line-height: 1.6; margin: 0 0 1.75rem; max-width: 56ch; }
+  .reveal-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; margin: 0 0 2.25rem; }
+  .reveal-box p { font-size: 15px; line-height: 1.65; margin: 0 0 0.6rem; max-width: 60ch; }
+  .reveal-box p:last-child { margin-bottom: 0; }
+  .reveal-box .doc-eyebrow { margin-bottom: 0.5rem; }
+
+  .picker { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 2rem; }
+  @media (max-width: 480px) { .picker { grid-template-columns: 1fr; gap: 32px; } }
+  .deck-wrap { text-align: center; }
+  .deck-wrap .eyebrow { color: var(--gold-strong); }
+  .deck { position: relative; width: 190px; height: 318px; margin: 0.5rem auto 0; perspective: 1200px; }
+  .deck-shadow { position: absolute; inset: 0; border-radius: 12px; background: var(--slot-bg); pointer-events: none; }
+  .deck-wrap.is-shadow .deck-shadow { background: var(--red); }
+  .deck-shadow.s1 { transform: translate(5px, 5px); opacity: 0.45; }
+  .deck-shadow.s2 { transform: translate(10px, 10px); opacity: 0.22; }
+  .deck-flip { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(.3,.7,.4,1); cursor: pointer; }
+  .deck-flip.flipped { transform: rotateY(180deg); }
+  .deck-flip:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  .deck-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 12px; border: 1px solid var(--border-strong); overflow: hidden; }
+  .deck-face.back { background: linear-gradient(150deg, var(--slot-bg) 0%, #000 130%); display: flex; align-items: center; justify-content: center; }
+  .deck-wrap.is-shadow .deck-face.back { background: linear-gradient(150deg, var(--red) 0%, #1a0608 130%); }
+  .deck-face.back::after { content: ''; width: 68%; height: 78%; border: 1px solid rgba(234,226,210,0.28); border-radius: 8px; }
+  .deck-face.front { transform: rotateY(180deg); background: var(--card-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .card-art { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; background: linear-gradient(155deg, var(--gold) 0%, var(--red) 100%); }
+  .deck-wrap.is-shadow .card-art { background: linear-gradient(155deg, var(--red) 0%, #1a0608 100%); }
+  .card-art span { font-family: "Fraunces", Georgia, serif; font-size: 32px; color: var(--card-bg); opacity: 0.85; }
+  .card-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .card-face-name { font-family: "Fraunces", Georgia, serif; font-size: 16px; line-height: 1.25; color: var(--ink); }
+  .card-face-tag { font-family: "IBM Plex Sans", sans-serif; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin-top: 4px; }
+  .card-face-name, .card-face-tag { display: none; }
+  .draw-link { margin-top: 14px; font-family: "IBM Plex Sans", sans-serif; font-size: 13px; color: var(--gold-strong); background: none; border: none; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; padding: 4px; }
+  .deck-wrap.is-shadow .draw-link { color: var(--red); }
+  .draw-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .hero { position: relative; border-radius: 16px; overflow: hidden; height: 300px; margin: 0 0 2rem; background-image: url('hero-bg.jpg'); background-size: cover; background-position: center 22%; }
+  .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,8,5,0.1) 0%, rgba(10,8,5,0.45) 55%, rgba(10,8,5,0.82) 100%); }
+  .hero-content { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding: 1.75rem 1.75rem 1.6rem; }
+  .hero .eyebrow { color: var(--gold); opacity: 1; }
+  .hero h1 { color: #F7F3E8; }
+  .hero .lede { color: rgba(247,243,232,0.85); margin-bottom: 0; }
+  .actions { display: flex; justify-content: center; margin: 0.5rem 0 2rem; }
+  #generate { font-family: "IBM Plex Sans", sans-serif; font-size: 14px; font-weight: 500; color: var(--card-bg); background: var(--red); border: none; border-radius: 999px; padding: 12px 32px; cursor: pointer; }
+  #generate:hover { filter: brightness(1.08); }
+  #generate:disabled { opacity: 0.55; cursor: default; }
+  #generate:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  #status { font-family: "IBM Plex Sans", sans-serif; font-size: 13px; color: var(--ink-soft); text-align: center; min-height: 18px; margin-bottom: 1.5rem; }
+  #error { font-family: "IBM Plex Sans", sans-serif; font-size: 13px; color: var(--red); text-align: center; min-height: 18px; margin-bottom: 1rem; }
+  #result { border-top: 1px solid var(--border); padding-top: 2rem; }
+  #result:empty { display: none; }
+  .doc-title { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 26px; margin: 0 0 0.3rem; text-wrap: balance; }
+  .doc-formula { font-size: 16px; color: var(--ink-soft); font-style: italic; margin: 0 0 2rem; max-width: 60ch; }
+  .doc-section { margin: 1.75rem 0; }
+  .doc-eyebrow { font-family: "IBM Plex Sans", sans-serif; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-strong); margin: 0 0 0.6rem; }
+  .doc-section p { font-size: 16px; line-height: 1.7; margin: 0 0 0.9rem; max-width: 65ch; }
+  .doc-section ul { margin: 0 0 0.9rem; padding-left: 1.2em; max-width: 65ch; }
+  .doc-section li { font-size: 16px; line-height: 1.6; margin-bottom: 0.35rem; }
+  .callout { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.3rem; margin: 1.25rem 0; }
+  .callout.question { border-left: 3px solid var(--gold); border-radius: 0 12px 12px 0; }
+  .callout.formula { border-left: 3px solid var(--red); border-radius: 0 12px 12px 0; }
+  .callout .doc-eyebrow { margin-bottom: 0.3rem; }
+  .callout p { margin: 0; font-size: 16px; }
+  .colors-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0.5rem 0 1rem; }
+  .swatch { font-family: "IBM Plex Sans", sans-serif; font-size: 12px; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--border); color: var(--ink-soft); }
+  #skip-target { position: absolute; left: -9999px; }
+</style>
+
+<div class="wrap">
+  <h2 class="sr-only" style="position:absolute;left:-9999px;">Генератор разборов сочетаний карт колоды «Архетипы и Тени»: выбор архетипа и тени, сборка профессионального образа</h2>
+  <div class="hero">
+    <div class="hero-content">
+      <p class="eyebrow">Архетипы и тени · Ольга Кузьмина</p>
+      <h1>Твоя сила и то, что ею управляет</h1>
+      <p class="lede">Архетип показывает, на что ты опираешься. Тень — куда эта сила уходит, когда включаются страх, защита и привычный способ справляться.</p>
+    </div>
+  </div>
+
+  <div class="reveal-box">
+    <p class="doc-eyebrow">Что тебя ждёт</p>
+    <p>Ты увидишь себя в точке встречи двух сил. Архетип покажет, чем ты располагаешь: как действуешь, на что опираешься, каким способом проявляешь себя в мире, принимаешь решения и достигаешь желаемого. Тень покажет, где эта сила меняет направление и начинает создавать ограничения, повторяющиеся сценарии и внутренние противоречия.</p>
+    <p>Соединение двух карт раскрывает механику именно твоего сочетания: где находится ресурс, чем он блокируется, что выпадает из поля зрения и на что можно опереться. Это возможность увидеть собственный способ двигаться по жизни яснее и понять, как направить уже существующую силу туда, где она начинает работать на тебя.</p>
+  </div>
+
+  <div class="picker">
+    <div class="deck-wrap" id="wrap-archetype">
+      <p class="eyebrow">Архетип</p>
+      <div class="deck">
+        <div class="deck-shadow s2"></div>
+        <div class="deck-shadow s1"></div>
+        <div class="deck-flip" id="flip-archetype" tabindex="0" role="button" aria-label="Тянуть карту архетипа">
+          <div class="deck-face back"></div>
+          <div class="deck-face front">
+            <div class="card-art" id="art-archetype"><span></span></div>
+            <div class="card-face-name" id="facename-archetype"></div>
+            <div class="card-face-tag" id="facetag-archetype"></div>
+          </div>
+        </div>
+      </div>
+      <button class="draw-link" id="draw-archetype" type="button">Тянуть карту</button>
+    </div>
+    <div class="deck-wrap is-shadow" id="wrap-shadow">
+      <p class="eyebrow">Тень</p>
+      <div class="deck">
+        <div class="deck-shadow s2"></div>
+        <div class="deck-shadow s1"></div>
+        <div class="deck-flip" id="flip-shadow" tabindex="0" role="button" aria-label="Тянуть карту тени">
+          <div class="deck-face back"></div>
+          <div class="deck-face front">
+            <div class="card-art" id="art-shadow"><span></span></div>
+            <div class="card-face-name" id="facename-shadow"></div>
+            <div class="card-face-tag" id="facetag-shadow"></div>
+          </div>
+        </div>
+      </div>
+      <button class="draw-link" id="draw-shadow" type="button">Тянуть карту</button>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button id="generate" type="button" disabled>Собрать разбор</button>
+  </div>
+  <p id="status"></p>
+  <p id="error"></p>
+
+  <div id="result"></div>
+</div>
+
+<script src="cards-data.js"></script>
+<script>
+(function () {
+  var statusEl = document.getElementById('status');
+  var errorEl = document.getElementById('error');
+  var resultEl = document.getElementById('result');
+  var genBtn = document.getElementById('generate');
+
+  var current = { archetype: null, shadow: null };
+
+  function updateGenBtn() {
+    genBtn.disabled = !(current.archetype && current.shadow);
+  }
+
+  function revealCard(kind, card) {
+    var flip = document.getElementById('flip-' + kind);
+    var art = document.getElementById('art-' + kind);
+    var nameEl = document.getElementById('facename-' + kind);
+    var tagEl = document.getElementById('facetag-' + kind);
+    var drawBtn = document.getElementById('draw-' + kind);
+
+    // Готово к подстановке реальных картинок: если у карты есть card.image — рисуем её,
+    // иначе показываем заглушку-инициал (место останется тем же после того, как картинки появятся).
+    art.innerHTML = card.image
+      ? '<img src="' + card.image + '" alt="' + card.name + '">'
+      : '<span>' + card.name.charAt(0) + '</span>';
+    nameEl.textContent = card.name;
+    tagEl.textContent = card.tag;
+    flip.classList.add('flipped');
+    drawBtn.textContent = 'Тянуть другую';
+
+    current[kind] = card;
+    updateGenBtn();
+  }
+
+  function drawArchetype() {
+    var i = Math.floor(Math.random() * ARCHETYPES.length);
+    revealCard('archetype', ARCHETYPES[i]);
+  }
+  function drawShadow() {
+    var i = Math.floor(Math.random() * SHADOWS.length);
+    revealCard('shadow', SHADOWS[i]);
+  }
+
+  document.getElementById('draw-archetype').addEventListener('click', drawArchetype);
+  document.getElementById('draw-shadow').addEventListener('click', drawShadow);
+  document.getElementById('flip-archetype').addEventListener('click', drawArchetype);
+  document.getElementById('flip-shadow').addEventListener('click', drawShadow);
+  ['flip-archetype', 'flip-shadow'].forEach(function (id) {
+    document.getElementById(id).addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+    });
+  });
+
+  var ARCH_TAG_PHRASE = {
+    "Проводник": "видит дальше, чем говорит вслух",
+    "Защитник": "действует раньше, чем боится",
+    "Даритель": "отдаёт, не считая",
+    "Творец": "не может остановиться на достигнутом",
+    "Артист": "притягивает внимание, не прося о нём",
+    "Чувственный": "ведёт через близость, а не через слова"
+  };
+  var SHADOW_TAG_PHRASE = {
+    "Самонападение": "судит себя строже, чем судили бы другие",
+    "Дефицит": "держит про запас то, что могло бы кончиться",
+    "Контроль": "не терпит решений, принятых в обход",
+    "Избегание": "исчезает раньше, чем придётся ответить",
+    "Разрушение_границ": "не спрашивает, можно ли"
+  };
+  var QUESTION_BY_SHADOW_TAG = {
+    "Самонападение": "Кого ты прощаешь быстрее, чем себя?",
+    "Дефицит": "Что ты придерживаешь для себя, хотя щедро раздаёшь это другим?",
+    "Контроль": "Где ты путаешь «вести за собой» с «продавливать»?",
+    "Избегание": "Что ты не говоришь вслух, потому что вслух — уже обязательство?",
+    "Разрушение_границ": "Где заканчивается твоё право действовать и начинается чужое право отказаться?"
+  };
+  var WHAT_HELPS_INTRO = {
+    "Проводник": "Эта сила раскрывается там, где нужно видеть суть раньше других",
+    "Защитник": "Эта сила находит опору там, где есть за что реально отвечать",
+    "Даритель": "Эта сила работает там, где можно отдавать щедро и по адресу",
+    "Творец": "Эта сила раскрывается там, где можно создавать без оглядки на готовые образцы",
+    "Артист": "Эта сила работает там, где внимание — инструмент, а не цель сама по себе",
+    "Чувственный": "Эта сила находит опору там, где тело и чувства говорят честнее слов"
+  };
+
+  function findLink(archTag, shadTag) {
+    for (var i = 0; i < LINKS.length; i++) {
+      if (LINKS[i].archetype_tag === archTag && LINKS[i].shadow_tag === shadTag) return LINKS[i];
+    }
+    return null;
+  }
+
+  function esc(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function napravleniyaList(s) {
+    return s.split(',').map(function (x) { return '<li>' + esc(x.trim()) + '</li>'; }).join('');
+  }
+
+  function fillNames(s, archeName, shadowName) {
+    return s.split('{arche}').join(archeName).split('{shadow}').join(shadowName);
+  }
+
+  function assembleDoc(arche, shadow) {
+    var link = findLink(arche.tag, shadow.tag);
+    var question = QUESTION_BY_SHADOW_TAG[shadow.tag];
+    var helpsIntro = WHAT_HELPS_INTRO[arche.tag];
+    var integraciya = fillNames(link.integraciya, esc(arche.name), esc(shadow.name));
+    return [
+      '<div class="doc-title">' + esc(arche.name) + ' + ' + esc(shadow.name) + '</div>',
+      '<p class="doc-formula">Сочетание того, кто ' + esc(ARCH_TAG_PHRASE[arche.tag]) + ', и тени, которая ' + esc(SHADOW_TAG_PHRASE[shadow.tag]) + '.</p>',
+
+      '<div class="doc-section"><p class="doc-eyebrow">Твоя сила</p><p>' + esc(arche.podacha) + '</p></div>',
+
+      '<div class="doc-section"><p class="doc-eyebrow">Что мешает</p><p>' + esc(shadow.teny_podacha) + '</p></div>',
+
+      '<div class="doc-section"><p class="doc-eyebrow">Как сочетаются карты</p><p>' + esc(link.konflikt) + '</p></div>',
+
+      '<div class="doc-section"><p class="doc-eyebrow">Слепая зона</p><p>' + esc(link.slepaya_zona) + '</p></div>',
+
+      '<div class="doc-section"><p class="doc-eyebrow">Что помогает</p><p>' + esc(helpsIntro) + ':</p><ul>' + napravleniyaList(arche.napravleniya) + '</ul></div>',
+
+      '<div class="callout question"><p class="doc-eyebrow">Опорный вопрос</p><p>' + esc(question) + '</p></div>',
+
+      '<div class="callout formula"><p class="doc-eyebrow">Формула сочетания</p><p>' + integraciya + '</p></div>'
+    ].join('\n');
+  }
+
+  genBtn.addEventListener('click', function () {
+    if (!current.archetype || !current.shadow) return;
+    errorEl.textContent = '';
+    resultEl.innerHTML = assembleDoc(current.archetype, current.shadow);
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+})();
+</script>
